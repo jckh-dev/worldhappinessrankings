@@ -1,90 +1,167 @@
 const express = require('express');
 const router = express.Router();
 
+// helper functions
+
+function checkYearFormat(year) {
+  var checkYear = !!(+year == year && year.length === 4 && year.trim() == year);
+  return checkYear;
+}
+
+
+function checkRowLength(res, rows, params) {
+
+  if (params) {
+    const keys = Object.keys(params);
+    const values = Object.values(params);
+
+    const key1 = keys[0];
+    const key2 = keys[1];
+    const param1 = values[0];
+    const param2 = values[1];
+  }
+  if (!rows.length) {
+    !key2 ? (res.json({ "Error": false, "Message": "No records matching your search query: \' " + key1 + " : " + param1 + " \'. " })) : (res.json({ "Error": false, "Message": "No records matching your search query \' " + key1 + " : " + param1 + " \' and \' " + key2 + " : " + param2 + " \'." }))
+  } else {
+    res.json({ "Error": false, "Message": "Success", "Query Results ": rows })
+  }
+
+}
+
+
+const withOptionalRankParams = function (queryBuilder, params) {
+
+  const keys = Object.keys(params);
+  const values = Object.values(params);
+
+  const key1 = keys[0];
+  const key2 = keys[1];
+  const param1 = values[0];
+  const param2 = values[1];
+
+  // sanitise user inputs 
+
+  if (param1 && param2) {
+    queryBuilder.where(key1, param1).andWhere(key2, param2);
+  }
+  if (param1 && !param2) {
+    queryBuilder.where(key1, param1);
+  }
+};
+
+
+const withOptionalFactorParams = function (queryBuilder, params) {
+
+  let country = params.country;
+  let limit = params.limit;
+
+  if (country && limit) {
+    queryBuilder.where('country', country)
+  }
+  if (country && !limit) {
+    queryBuilder.where('country', country)
+  }
+  if (!country && limit) {
+    queryBuilder.limit(limit)
+  }
+};
+
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'World Happiness Rankings' });
 });
 
-router.get('/api', function (req, res, next) {
-  res.render('index', { title: "World Happiness Rankings" });
-});
 
-router.get("/api/rankings", function (req, res, next) {
+// GET rankings Page
+router.get("/rankings", function (req, res, next) {
 
-  let country = req.query.country;
-  let year = req.query.year;
-
-  const withOptionalVar = function (queryBuilder) {
-    if (country && year) {
-      queryBuilder.where('country', country).andWhere('year', year)
-    }
-    if (country && !year) {
-      queryBuilder.where('country', country)
-    }
-    if (!country && year) {
-      queryBuilder.where('year', year)
-    }
-  };
+  const optionalRankParams = req.query;
 
   req.db.from('rankings')
-    .select('country', 'rank', 'score', 'year')
-    .modify(withOptionalVar)
+    .select('rank', 'country', 'score', 'year')
+    .modify(withOptionalRankParams, optionalRankParams)
     .orderBy('year', 'desc')
     .then((rows) => {
-      res.json({ "Error": false, "Message": "Success", "Rankings": rows })
+      checkRowLength(res, rows, optionalRankParams)
     })
     .catch((err) => {
       console.log(err);
-      res.json({ "Error": true, "Message": "Error in  MySQL query" })
+      res.json({ "Error": true, "Message": "Invalid query parameters. Query parameters are not permitted." })
     })
 });
 
-router.get("/api/countries", function (req, res, next) {
+router.get("/countries", function (req, res, next) {
   req.db.from('rankings')
     .select('country')
     .distinct()
     .orderBy('country', 'ASC')
     .then((rows) => {
-      res.json({ "Error": false, "Message": "Success", "Here are all the surveyed countries": rows })
+      checkRowLength(res, rows)
     })
     .catch((err) => {
       console.log(err);
-      res.json({ "Error": true, "Message": "Error in  MySQL query" })
+      res.json({ "Error": true, "Message": "Invalid query parameters. Query parameters are not permitted." })
     })
 })
-module.exports = router;
 
+const authorize = (req, res, next) => {
+  const authorization = req.headers.authorization;
+  let token = null;
 
-router.get("/api/factors/:year", function (req, res, next) {
+  // const exampleToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZ21haWwuY29tIiwiZXhwIjoxNjIyNzIxMzAyLCJpYXQiOjE2MjI2MzQ5MDJ9.0tG9uRePqlehYSEhkJl1txfwUNBs1uYIicDjfA14k0Y";
+
+  if (authorization && authorization.split(" ").length === 2) {
+    token = authorization.split(" ")[1]
+    console.log("Tokens ", token)
+  }
+  else {
+    res.status(401).json({ error: true, message: "err + : Unauthorized" })
+    return
+  }
+
+  // verify JWT Token
+  try {
+    const decode = jwt.verify(token, secretKey)
+
+    if (decoded.exp < Date.now()) {
+      res.status(401).json({ error: true, message: "Token Expired" })
+      return
+    }
+
+    // permit user to advance
+    next()
+  } catch (e) {
+    res.status(401).json({ error: true, message: err + " : Unathorized" })
+  }
+}
+
+// factors page
+router.get("/factors/:year", function (req, res, next) {
   // catch the 404 error for navigating straight to factors with a year in the url
-  let country = req.query.country;
-  let limit = req.query.limit;
-  var year = req.params.year;
 
-  const withOptionalVar = function (queryBuilder) {
-    if (country && limit) {
-      queryBuilder.where('country', country).limit(limit)
-    }
-    if (country && !limit) {
-      queryBuilder.where('country', country)
-    }
-    if (!country && limit) {
-      queryBuilder.limit(limit)
-    }
-  };
+  const optionalFactorParams = req.query;
+  const year = req.params.year;
+  var validYear = checkYearFormat(year);
 
-  if (!year) {
-    res.status(400).json({ message: "error with search request, please enter a year" });
+  if (!validYear) {
+    res.status(400).json({ message: "Invalid year format. Format must be yyyy" });
   } else {
     req.db.from('rankings').select('*').where('year', year)
-      .modify(withOptionalVar)
+      .modify(withOptionalFactorParams, optionalFactorParams)
       .then((rows) => {
-        res.json({ "Error": false, "Message": "Success", "Here are all the surveyed countries": rows })
+        if (!rows.length) {
+          res.json({ "Error": false, "Message": "There are no matching records this query" })
+        } else {
+          res.json({ "Error": false, "Message": "Success", "Country Factors: ": rows })
+        }
       })
       .catch((err) => {
         console.log(err);
         res.json({ "Error": true, "Message": "Error in  MySQL query" })
       })
   };
+
 });
+
+module.exports = router;

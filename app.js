@@ -12,7 +12,23 @@ const knex = require('knex')(options);
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
+// cors 
+const helmet = require('helmet');
+const cors = require('cors');
+
 const app = express();
+
+app.use(logger('short'));
+
+app.use(helmet());
+app.use(cors());
+
+logger.token('req', (req, res) => JSON.stringify(req.headers))
+logger.token('res', (req, res) => {
+  const headers = {}
+  res.getHeaderNames().map(h => headers[h] = res.getHeader(h))
+  return JSON.stringify(headers)
+})
 
 //setting up knex 
 app.use((req, res, next) => {
