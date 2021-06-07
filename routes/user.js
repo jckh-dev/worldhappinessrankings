@@ -6,11 +6,11 @@ const saltRounds = 10;
 
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.send('respond with a resource');
 });
 
-router.post("/user/register", function (req, res, next) {
+router.post("/register", function (req, res, next) {
   //1. retrieve  email and password from req.body
   const email = req.body.email
   const password = req.body.password
@@ -39,7 +39,7 @@ router.post("/user/register", function (req, res, next) {
     })
 })
 
-router.post("/user/login", function (req, res, next) {
+router.post("/login", function (req, res, next) {
   const email = req.body.email
   const password = req.body.password
 

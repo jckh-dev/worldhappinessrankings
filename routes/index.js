@@ -137,7 +137,7 @@ const authorize = (req, res, next) => {
 }
 
 // factors page
-router.get("/factors/:year", function (req, res, next) {
+router.get("/factors/:year", authorize, function (req, res, next) {
   // catch the 404 error for navigating straight to factors with a year in the url
 
   const optionalFactorParams = req.query;
