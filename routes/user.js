@@ -74,4 +74,12 @@ router.post("/login", function (req, res, next) {
 })
 
 
+
+router.get("/:email/profile", function (req, res, next) {
+
+  const email = req.body.email;
+  
+
+})
+
 module.exports = router;

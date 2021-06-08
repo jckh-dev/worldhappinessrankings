@@ -31,6 +31,9 @@ function checkRowLength(res, rows, params) {
 
 const withOptionalRankParams = function (queryBuilder, params) {
 
+  const { year, country, ...invalidRemaining } = params;
+  invalidKeys = Object.keys(invalidRemaining);
+
   const keys = Object.keys(params);
   const values = Object.values(params);
 
@@ -39,14 +42,16 @@ const withOptionalRankParams = function (queryBuilder, params) {
   const param1 = values[0];
   const param2 = values[1];
 
-  // sanitise user inputs 
-
+  if (invalidKeys) {
+    res.status(400).json({ "Error": true, "Message": "Invalid Query Parameters. Only year and country are permitted." })
+  }
   if (param1 && param2) {
     queryBuilder.where(key1, param1).andWhere(key2, param2);
   }
   if (param1 && !param2) {
     queryBuilder.where(key1, param1);
   }
+
 };
 
 
@@ -56,7 +61,7 @@ const withOptionalFactorParams = function (queryBuilder, params) {
   let limit = params.limit;
 
   if (country && limit) {
-    queryBuilder.where('country', country)
+    queryBuilder.where('country', country).limit(limit)
   }
   if (country && !limit) {
     queryBuilder.where('country', country)
@@ -76,7 +81,12 @@ router.get('/', function (req, res, next) {
 // GET rankings Page
 router.get("/rankings", function (req, res, next) {
 
-  const optionalRankParams = req.query;
+  // destructure req.query then do a check to see if invalidRemaining holds any values and , if so, throw invalid response, 
+  // const { year, country, ...invalidRemaining } = req.query;
+  // invalidKeys = Object.keys(invalidRemaining);
+
+  // old param variable.... pending delete
+  optionalRankParams = req.query;
 
   req.db.from('rankings')
     .select('rank', 'country', 'score', 'year')
