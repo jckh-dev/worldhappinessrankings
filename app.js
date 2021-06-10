@@ -16,6 +16,10 @@ const usersRouter = require('./routes/user');
 const helmet = require('helmet');
 const cors = require('cors');
 
+// swagger docs
+const swaggerUI = require('swagger-ui-express');
+const swaggerDocument = require('./docs/swagger.json');
+
 const app = express();
 
 app.use(logger('short'));
@@ -53,8 +57,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// set the routes up
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -93,7 +93,7 @@ const withOptionalFactorParams = function (queryBuilder, params) {
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'World Happiness Rankings' });
+  res.render('index', Swagger_UI);
 });
 
 

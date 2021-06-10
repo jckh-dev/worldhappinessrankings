@@ -5,6 +5,11 @@
     "title": "World Happiness Rankings",
     "description": "This API has been created to support the assessment in QUT's CAB230 Web Computing unit. It exposes a small number of REST endpoints which implement CRUD operations on a database containing publicly available data from the World Happiness Report (<a href=\"https://en.wikipedia.org/wiki/World_Happiness_Report\" target=\"_blank\">https://en.wikipedia.org/wiki/World_Happiness_Report</a>) - an annual survey that ranks the overall happiness of a country according to the views of its citizens on a range of happiness measures. This API provides access to the survey data for the years 2015 to 2020 (inclusive). The API endpoints and their usage are described in detail below."
   },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
   "components": {
     "securitySchemes": {
       "bearerAuth": {
@@ -670,7 +675,7 @@
       }
     },
     "/user/{email}/profile": {
-      //Lots of stuff to do here - don't forget to use the schemas and the appropriate tags
+      
     }
   }
 }

@@ -1,9 +1,11 @@
 module.exports = {
-    client: 'mysql2', 
+    client: 'mysql2',
     connection: {
-        host: 'localhost', 
+        host: 'localhost',
         database: 'happiness',
         user: 'root',
-        password: 'Dcba1234'
+        password: 'Dcba1234',
+        timezone: 'UTC',
+        dateStrings: true
     }
 }
