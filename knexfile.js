@@ -4,7 +4,7 @@ module.exports = {
         host: 'localhost',
         database: 'happiness',
         user: 'root',
-        password: 'Dcba1234',
+        password: 'Cab230!',
         dateStrings: true
     }
 }
