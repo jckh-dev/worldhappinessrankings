@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../docs/swagger.json');
 // helper functions
 
 
@@ -92,9 +94,7 @@ const withOptionalFactorParams = function (queryBuilder, params) {
 
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
-  res.render('index');
-});
+router.get('/', swaggerUi.setup(swaggerDocument));
 
 
 // GET rankings Page

@@ -18,7 +18,7 @@ const cors = require('cors');
 
 // swagger docs
 const swaggerUI = require('swagger-ui-express');
-const swaggerDocument = require('./docs/swagger.json');
+// const swaggerDocument = require('./docs/swagger.json');
 
 const app = express();
 
@@ -60,7 +60,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // set the routes up
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
-app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
+app.use('/', swaggerUI.serve);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
