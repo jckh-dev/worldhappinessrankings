@@ -93,7 +93,7 @@ const withOptionalFactorParams = function (queryBuilder, params) {
 };
 
 
-/* GET home page. */
+/* GET swagger home page. */
 router.get('/', swaggerUi.setup(swaggerDocument));
 
 
