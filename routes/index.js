@@ -93,7 +93,7 @@ const withOptionalFactorParams = function (queryBuilder, params) {
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', Swagger_UI);
+  res.render('index');
 });
 
 
@@ -155,9 +155,9 @@ router.get("/countries", function (req, res, next) {
   else {
     req.db.from('rankings')
       .select('country')
+      .orderBy('country', 'ASC')
       // filter out multiple returned results
       .distinct()
-      .orderBy('country', 'ASC')
       // display successful results. will return empty array if no results.
       .then((rows) => {
         res.status(200).json(rows)

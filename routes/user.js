@@ -158,7 +158,7 @@ router.get("/:email/profile", jwtCheck, function (req, res, next) {
   const paramEmail = req.params.email;
 
   // run a check against the JWT email vs URL parameter email address. store result for boolean check in order to decide which profile query to execute (auth vs public).
-  const checkSameEmail = compareTokenEmail(res, authorization, paramEmail);
+  const checkSameEmail = compareTokenEmail(authorization, paramEmail);
 
   // query for searching db for matching email address in user table
   const queryUsers = req.db.from("users").select("*").where("email", "=", paramEmail)
@@ -294,7 +294,7 @@ router.put("/:email/profile", authorize, function (req, res, next) {
   }
 
   // These are a set of tests that capture the boolean response. This response is then used to produce the required error messages or if passed, allow the function to continue to the update clause.
-  const checkSameEmail = compareTokenEmail(res, authorization, paramEmail);
+  const checkSameEmail = compareTokenEmail(authorization, paramEmail);
   const checkBodyTypes = checkBodyParams(firstName, lastName, address);
   const checkDob = checkDobFormat(dob);
   const checkDobDate = checkDobTime(dob);
