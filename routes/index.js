@@ -111,15 +111,15 @@ router.get("/rankings", function (req, res, next) {
 
   // test boolean values of parameter check results to sanitise DB query values. if a test is true, throw status error with suitable message. if 
   if (invalidParams) {
-    res.status(400).json({ "Error": true, "Message": "Invalid Query Parameters. Only year and country are permitted." })
+    res.status(400).json({ error: true, message: "Invalid Query Parameters. Only year and country are permitted." })
     return
   }
   else if (yearVal && !yearFormat) {
-    res.status(400).json({ "Error": true, "Message": "Invalid year format. Format must be yyyy." })
+    res.status(400).json({ error: true, message: "Invalid year format. Format must be yyyy." })
     return
   }
   else if (countryFormat) {
-    res.status(400).json({ "Error": true, "Message": "Country query parameter cannot contain numbers." })
+    res.status(400).json({ error: true, message: "Country query parameter cannot contain numbers." })
     return
   }
   // if all checks return false, continue with DB query construction
@@ -135,7 +135,7 @@ router.get("/rankings", function (req, res, next) {
       })
       .catch((err) => {
         console.log(err);
-        res.status(400).json({ "Error": true, "Message": "Error executing MySQL query" })
+        res.status(400).json({ error: true, message: "Error executing MySQL query" })
       })
   }
 });
@@ -149,7 +149,7 @@ router.get("/countries", function (req, res, next) {
 
   // if there are any parameters in the request, throw error with suitable message.
   if (queryParams.length > 0) {
-    res.status(400).json({ "Error": true, "Message": "Invalid Query Parameters. Query parameters are not permitted." })
+    res.status(400).json({ error: true, message: "Invalid Query Parameters. Query parameters are not permitted." })
     return
   }
   else {
@@ -164,7 +164,7 @@ router.get("/countries", function (req, res, next) {
       })
       .catch((err) => {
         console.log(err);
-        res.status(400).json({ "Error": true, "Message": err + "Error executing MySQL query." })
+        res.status(400).json({ error: true, message: "Error executing MySQL query." })
       })
   }
 })
@@ -217,17 +217,17 @@ router.get("/factors/:year", authorize, function (req, res) {
   var validCountry = checkCountryFormat(country);
 
   if (!validYear) {
-    res.status(400).json({ "Error": true, "Message": "Invalid year format. Format must be yyyy" });
+    res.status(400).json({ error: true, message: "Invalid year format. Format must be yyyy" });
   }
   else if (invalidParams) {
-    res.status(400).json({ "Error": true, "Message": "Invalid Query Parameters. Only limit and country are permitted." })
+    res.status(400).json({ error: true, message: "Invalid Query Parameters. Only limit and country are permitted." })
     return
   }
   else if (limit && !validLimit) {
-    res.status(400).json({ "Error": true, "Message": "Invalid limit query. Limit must be a positive number." })
+    res.status(400).json({ error: true, message: "Invalid limit query. Limit must be a positive number." })
   }
   else if (country && validCountry) {
-    res.status(400).json({ "Error": true, "Message": "Invalid country format. Country query parameter cannot contain numbers." })
+    res.status(400).json({ error: true, message: "Invalid country format. Country query parameter cannot contain numbers." })
   }
   else {
     req.db.from('rankings').select('*').where('year', year)
@@ -238,7 +238,7 @@ router.get("/factors/:year", authorize, function (req, res) {
       )
       .catch((err) => {
         // console.log(err);
-        res.json({ "Error": true, "Message": err + "Error in  MySQL query" })
+        res.json({ error: true, message: "Error in  MySQL query" })
       })
   };
 

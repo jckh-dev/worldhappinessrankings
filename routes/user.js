@@ -189,7 +189,7 @@ router.get("/:email/profile", jwtCheck, function (req, res, next) {
         res.status(200).json(rows)
       })
         .catch((err) => {
-          res.status(400).json({ "Error": true, "Message": "Error executing MySQL query" })
+          res.status(400).json({ error: true, message: "Error executing MySQL query" })
         })
     }
 

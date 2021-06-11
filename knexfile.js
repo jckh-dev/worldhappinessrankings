@@ -5,7 +5,6 @@ module.exports = {
         database: 'happiness',
         user: 'root',
         password: 'Dcba1234',
-        timezone: 'UTC',
         dateStrings: true
     }
 }
